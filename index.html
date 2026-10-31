@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Perhitungan Penumpang - InJourney Airports</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        ijBlue: '#003366',
+                        ijTeal: '#00A896',
+                        ijGold: '#F4A261',
+                        ijNavy: '#0A192F',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f766e 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-800 font-sans min-h-screen flex flex-col justify-center items-center p-4 gradient-bg relative overflow-x-hidden">
+
+    <!-- Compact Clean Container -->
+    <div class="w-full max-w-lg mx-auto bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/20">
+        
+        <!-- Header Minimalis InJourney -->
+        <div class="bg-gradient-to-r from-blue-900 via-teal-700 to-emerald-600 p-6 text-white text-center relative">
+            <div class="inline-flex items-center justify-center space-x-2 mb-1">
+                <i class="fa-solid fa-plane-up text-xl text-teal-300"></i>
+                <span class="text-2xl font-black tracking-tight">InJourney</span>
+                <span class="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Airports</span>
+            </div>
+            <p class="text-xs text-teal-100/80 font-medium">Kalkulator Inspeksi Penumpang (BC & OC)</p>
+        </div>
+
+        <div class="p-6 space-y-5">
+            <!-- Form Input Simpel -->
+            <div>
+                <label for="paxInput" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                    Jumlah PAX (Penumpang)
+                </label>
+                <div class="relative">
+                    <i class="fa-solid me-2 fa-users absolute left-4 top-1/2 -translate-y-1/2 text-teal-600 text-lg"></i>
+                    <input 
+                        type="number" 
+                        id="paxInput" 
+                        value="13000" 
+                        min="0" 
+                        step="1"
+                        placeholder="Masukkan nilai PAX..."
+                        class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl font-extrabold text-2xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all"
+                        oninput="calculate()"
+                    >
+                </div>
+            </div>
+
+            <!-- Preset Buttons -->
+            <div class="flex gap-2">
+                <button type="button" onclick="setPax(5000)" class="flex-1 py-1.5 bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-600 rounded-xl text-xs font-bold transition-all">5.000</button>
+                <button type="button" onclick="setPax(13000)" class="flex-1 py-1.5 bg-teal-500 text-white rounded-xl text-xs font-bold shadow-md shadow-teal-500/20 transition-all">13.000</button>
+                <button type="button" onclick="setPax(25000)" class="flex-1 py-1.5 bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-600 rounded-xl text-xs font-bold transition-all">25.000</button>
+                <button type="button" onclick="resetForm()" class="px-3 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-500 rounded-xl text-xs font-bold transition-all" title="Reset"><i class="fa-solid fa-rotate-right"></i></button>
+            </div>
+
+            <hr class="border-slate-100">
+
+            <!-- Result Cards - Equal Sizes with Distinct Colors -->
+            <div class="grid grid-cols-2 gap-3.5">
+                <!-- 1. PAX (Blue Theme) -->
+                <div class="h-32 p-4 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-md shadow-blue-500/20 flex flex-col justify-between">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-blue-100">PAX Input</span>
+                        <i class="fa-solid fa-users text-xs text-blue-200/80"></i>
+                    </div>
+                    <div>
+                        <div id="displayPax" class="text-2xl sm:text-3xl font-black tracking-tight leading-none">13.000</div>
+                        <div class="text-[10px] text-blue-100/80 mt-1 font-medium truncate">Penumpang Sekarang</div>
+                    </div>
+                </div>
+
+                <!-- 2. TELL (Amber/Orange Theme) -->
+                <div class="h-32 p-4 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-md shadow-amber-500/20 flex flex-col justify-between">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-amber-100">Teller</span>
+                        <span class="text-[9px] bg-amber-700/40 px-1.5 py-0.5 rounded font-bold">PAX × 2</span>
+                    </div>
+                    <div>
+                        <div id="displayTell" class="text-2xl sm:text-3xl font-black tracking-tight leading-none">26.000</div>
+                        <div class="text-[10px] text-amber-100/80 mt-1 font-medium truncate">Total Pengali Teller</div>
+                    </div>
+                </div>
+
+                <!-- 3. Body Check (BC - Emerald Theme) -->
+                <div class="h-32 p-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 text-white shadow-md shadow-emerald-500/20 flex flex-col justify-between">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-100">Body Check (BC)</span>
+                        <span class="text-[9px] bg-emerald-800/40 px-1.5 py-0.5 rounded font-bold">7.72% PAX</span>
+                    </div>
+                    <div>
+                        <div id="displayBC" class="text-2xl sm:text-3xl font-black tracking-tight leading-none">1.003,6</div>
+                        <div class="text-[10px] text-emerald-100/80 mt-1 font-medium truncate">Pemeriksaan Fisik</div>
+                    </div>
+                </div>
+
+                <!-- 4. Open Cabin (OC - Cyan Theme) -->
+                <div class="h-32 p-4 rounded-2xl bg-gradient-to-br from-cyan-600 to-blue-800 text-white shadow-md shadow-cyan-500/20 flex flex-col justify-between">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-cyan-100">Open Cabin (OC)</span>
+                        <span class="text-[9px] bg-cyan-900/40 px-1.5 py-0.5 rounded font-bold">3.29% PAX</span>
+                    </div>
+                    <div>
+                        <div id="displayOC" class="text-2xl sm:text-3xl font-black tracking-tight leading-none">427,7</div>
+                        <div class="text-[10px] text-cyan-100/80 mt-1 font-medium truncate">Pemeriksaan Kabin</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Copy -->
+            <button onclick="copyResults()" class="w-full py-3.5 bg-slate-800 hover:bg-slate-900 text-white rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.99] shadow-lg shadow-slate-800/10">
+                <i class="fa-solid fa-copy"></i> Salin Ringkasan Hasil
+            </button>
+        </div>
+
+        <div class="bg-slate-50 py-3 text-center border-t border-slate-100">
+            <span class="text-[11px] text-slate-400 font-medium">© InJourney Airports Security Check</span>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 text-xs font-semibold translate-y-20 opacity-0 transition-all duration-300 z-50 border border-slate-700">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastMsg">Teks disalin ke clipboard!</span>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        function formatNumber(num) {
+            return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(num);
+        }
+
+        function calculate() {
+            const paxInput = document.getElementById('paxInput');
+            let pax = parseFloat(paxInput.value);
+
+            if (isNaN(pax) || pax < 0) {
+                pax = 0;
+            }
+
+            const tell = pax * 2;
+            const bc = pax * 0.0772; // 7.72% dari PAX
+            const oc = pax * 0.0329; // 3.29% dari PAX
+
+            document.getElementById('displayPax').innerText = formatNumber(pax);
+            document.getElementById('displayTell').innerText = formatNumber(tell);
+            document.getElementById('displayBC').innerText = formatNumber(bc);
+            document.getElementById('displayOC').innerText = formatNumber(oc);
+        }
+
+        function setPax(val) {
+            document.getElementById('paxInput').value = val;
+            calculate();
+        }
+
+        function resetForm() {
+            document.getElementById('paxInput').value = 0;
+            calculate();
+        }
+
+        function copyResults() {
+            const pax = document.getElementById('displayPax').innerText;
+            const tell = document.getElementById('displayTell').innerText;
+            const bc = document.getElementById('displayBC').innerText;
+            const oc = document.getElementById('displayOC').innerText;
+
+            const textToCopy = `[ INJOURNEY AIRPORTS - PERHITUNGAN PENUMPANG ]\n` +
+                               `• PAX : ${pax}\n` +
+                               `• Teller : ${tell}\n` +
+                               `• BC (Body Check - 7.72% PAX) : ${bc}\n` +
+                               `• OC (Open Cabin - 3.29% PAX) : ${oc}`;
+
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast("Hasil perhitungan berhasil disalin!");
+            } catch (err) {
+                showToast("Gagal menyalin hasil.");
+            }
+            
+            document.body.removeChild(tempTextArea);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = message;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        window.onload = function() {
+            calculate();
+        };
+    </script>
+</body>
+</html>
